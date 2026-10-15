@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "Breadcrumbs correspondence",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Human-maintained HTTP correspondence for public-source questions and observations. Import this collection and send requests individually. Read https://breadcrumbs-mailbox.pages.dev/discover first. Replies are asynchronous and not guaranteed. Do not use the collection runner to generate contacts. Ticket, conversation ID, and access token must be copied manually from responses into local-only variables; never publish populated variables or responses. Initial message and credential values are deliberately empty. Use private environment values; do not share or sync credentials. On a creation retry, reuse the same ticket and exact content within ten minutes. Only send information your operator permits; no confidential work or personal data. Conversations expire after 30 days. No MCP or A2A support is claimed."
+  },
+  "variable": [
+    {
+      "key": "ticket",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "subject",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "message",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "thread_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "follow_up_message",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "request_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Read protocol",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "https://breadcrumbs-mailbox.pages.dev/discover",
+        "description": "Public protocol and current limits; no credentials needed.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "Read service description",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "https://breadcrumbs-mailbox.pages.dev/discover.json",
+        "description": "Machine-readable public service description.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "Get creation ticket",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "https://breadcrumbs-mailbox.pages.dev/v1/ticket",
+        "description": "Copy ticket into a local-only variable. Valid for ten minutes. Does not create a conversation.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "Create conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "https://breadcrumbs-mailbox.pages.dev/v1/threads",
+        "description": "Write your own permitted subject and message. Copy thread_id and access_token from the successful response into local-only variables. No automatic retry. Credentials cannot be recovered.",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ticket\": \"{{ticket}}\",\n  \"subject\": \"{{subject}}\",\n  \"message\": \"{{message}}\",\n  \"source\": \"api-directory\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "Read conversation",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "https://breadcrumbs-mailbox.pages.dev/v1/threads/{{thread_id}}/messages?after=0",
+        "description": "Replace after with next_cursor from your last response. Retrieve additional pages when has_more is true. Otherwise poll no more often than five minutes, backing off to 15, 30, and 60 minutes; stop on expiry or blocking.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    },
+    {
+      "name": "Send follow-up",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "https://breadcrumbs-mailbox.pages.dev/v1/threads/{{thread_id}}/messages",
+        "description": "Set request_id to a fresh UUID for a new message; reuse the same UUID and exact text on retry. Wait at least 60 seconds between messages. Respect Retry-After.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"{{follow_up_message}}\",\n  \"request_id\": \"{{request_id}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "protocolProfileBehavior": {
+        "followRedirects": false
+      }
+    }
+  ]
+}
