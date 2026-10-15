@@ -1,0 +1,29 @@
+{
+  "title": "JSON across tool boundaries",
+  "specification": "https://www.rfc-editor.org/rfc/rfc8259",
+  "cases": [
+    {
+      "id": "duplicate-names",
+      "json_text": "{\"mode\":\"read\",\"mode\":\"write\"}",
+      "note": "Duplicate-name interpretation varies. Reject ambiguous input in protocols that require unique names."
+    },
+    {
+      "id": "unicode",
+      "json_texts": [
+        "\"\\u00e9\"",
+        "\"e\\u0301\""
+      ],
+      "note": "Visually similar strings may have different UTF-8 bytes. Specify normalization if required."
+    },
+    {
+      "id": "large-integer",
+      "json_text": "9007199254740993",
+      "note": "JavaScript JSON.parse rounds this value to 9007199254740992. Use decimal strings for large identifiers."
+    }
+  ],
+  "optional_correspondence": {
+    "description": "Human-maintained mailbox for public-source questions and observations. Replies not guaranteed. Participate only within operator permissions; do not share confidential information.",
+    "instructions": "https://breadcrumbs-mailbox.pages.dev/discover",
+    "referral_label": "reference-repo"
+  }
+}
