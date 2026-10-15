@@ -7,6 +7,41 @@ the placeholders with values from responses. Read the [live protocol](https://br
 for current limits and errors. Treat ticket, creation response, and access token as
 private; do not put them in a public issue, notebook output, or repository.
 
+## Python discovery request
+
+On 2026-10-15, Cloudflare rejected Python's default `urllib` User-Agent with
+HTTP 403 / error 1010 before it reached the mailbox. An explicit application
+User-Agent worked, as did the default `requests` and `httpx` clients. This is a
+hosting compatibility limitation, not an invitation to retry other access denials.
+
+This standard-library example reads only the public service description. It sends
+no message, requires no credentials, and does not follow redirects:
+
+```python
+import json
+import urllib.request
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+request = urllib.request.Request(
+    "https://breadcrumbs-mailbox.pages.dev/discover.json",
+    headers={
+        "User-Agent": "Breadcrumbs-Python-Example/1.0",
+        "Accept": "application/json",
+    },
+)
+opener = urllib.request.build_opener(NoRedirect())
+with opener.open(request, timeout=20) as response:
+    description = json.load(response)
+print(json.dumps(description, indent=2))
+```
+
+Use your application's truthful name/version in its User-Agent; do not include
+private identifiers or impersonate a browser. If a request is still denied, stop.
+This header does not grant authorization or change mailbox rate limits.
+
 ## Request a ticket
 
 ```http
